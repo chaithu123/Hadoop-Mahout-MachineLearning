@@ -1,0 +1,24 @@
+Data Source:-
+-------------
+http://ichart.finance.yahoo.com/table.csv?s=GOOG&d=10&e=29&f=2013&g=d&a=7&b=19&c=2004&ignore=.csv
+
+http://finance.yahoo.com/q/hp?s=GOOG+Historical+Prices
+
+https://www.google.com/finance/historical?q=NASDAQ%3AGOOG
+ 
+Code:
+
+
+train wget --output-document=google.csvhttp://ichart.finance.yahoo.com/table.csv?s=GOOG
+
+cut -d , -f 2-7 google.csv > training.csv
+
+mahout trainlogistic --input /home/mahesh/week45/final.csv --output /home/mahesh/week45/logistic/model --target Action --predictors Open Close High --types word --features 20 --passes 100 --rate 50 --categories 2
+
+mahout runlogistic --input final.csv --model model --auc --confusion 
+
+mahout runlogistic --input train/enter.csv --model model/model
+
+mahout trainlogistic --input training/enter.csv --output model/model --target Action --predictors Open Close High --types word --features 20 --passes 100 --rate 50 --categories 2 
+
+mahout runLogistic --input training/enter.csv --model model/model --auc --confusion 
