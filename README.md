@@ -6,4 +6,4 @@ List of algorithms performed are:
          Logistic Regression
          Basic Classification
          Mahout-RandomForest
-         Mahout-Kmeans
+       
