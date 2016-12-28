@@ -1,0 +1,11 @@
+//bin/mahout cat donut.csv (donut dataset)
+
+bin/mahout trainlogistic --input donut.csv --output model --target color --categories 2 --predictors x y --types numeric --features 20 --passes 100 --rate 50
+
+mahout runlogistic --input donut.csv --model model --auc --confusion
+
+//build more efficient model by training with additional predictor variables
+
+mahout trainlogistic --input donut.csv --output model --target color --categories 2 --predictors x y a b c --types numeric --features 20 --passes 100 --rate 50
+
+mahout runlogistic --input donut.csv --model model --auc --confusion
