@@ -1,0 +1,37 @@
+mahout describe -p data/bankruptsy/bankruptsy.csv -f data/bankruptsy/rfinfo -d I 12 N L
+
+hadoop fs -rm -r temp/markedPreferences
+
+hadoop fs -rm -r data/bankruptsy/rfsplit
+
+mahout splitDataset --input data/bankruptsy/bankruptsy.csv --output data/bankruptsy/rfsplit --trainingPercentage 0.7 --probePercentage 0.3
+
+hadoop fs -ls data/bankruptcy/rfsplit
+
+hadoop fs -rm -r data/bankruptcy/rfmodel
+
+mahout buildforest -d data/bankruptcy/rfsplit/trainingSet/* -ds data/bankruptcy/rfinfo -sl 3 -p -t 10 -o data/bankruptcy/rfmodel
+
+hadoop fs -rm -r data/bankruptcy/rfpredictions
+
+mahout testforest -i data/bankruptcy/rfsplit/probeSet -ds data/bankruptcy/rfinfo -m data/bankruptcy/rfmodel -a -mr -o data/bankruptcy/rfpredictions
+
+hadoop fs -cat data/bankruptcy/rfpredictions/*
+
+MAHOUT KMEANS TEXT CLUSTERING
+
+hadoop fs -mkdir /user/cloudera/data/news
+
+mahout seqdirectory -i data/news/ -o data/news/kmeansseqfiles -ow
+
+mahout seq2sparse -i data/news/kmeansseqfiles -o data/news/kmeanstfidiffiles -ow
+
+hadoop fs -ls data/news/kmeanstfidffiles
+
+mahout kmeans -i data/news/kmeanstfidffiles/tfidf-vectors/ -c data/news/kmeanscentroids -cl -o data/news/kmeansclusters -k 2 -ow -x 50 -dm org.apache.mahout.common.distance.CosineDistanceMeasure
+
+hadoop fs -ls data/news/kmeansclusters
+
+mahout clusterdump -d data/news/kmeanstfidffiles/dictionary.file-0 -dt sequencefile -i data/news/kmeansclusters/clusters-1-final -n 20 -b 100 -o data/news/dumpfile.txt -p data/news/kmeansclusters/clusteredPoints/
+
+cat data/news/dumpfile.txt
